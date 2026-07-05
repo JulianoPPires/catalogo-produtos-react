@@ -1,36 +1,24 @@
-import React from 'react';
 import styles from './Produto.module.css';
-import { useParams } from 'react-router-dom';
+import { useLoaderData } from 'react-router-dom';
 import Head from './Head';
 
+export async function produtoLoader({ params }) {
+  const response = await fetch(
+    `https://ranekapi.origamid.dev/json/api/produto/${params.id}`
+  );
+
+  if (!response.ok) {
+    throw new Response('Produto não encontrado.', { status: response.status });
+  }
+
+  return response.json();
+}
+
 const Produto = () => {
-  const [produto, setProduto] = React.useState(null);
-  const [erro, setErro] = React.useState(null);
-  const [loading, setLoading] = React.useState(true);
-  const { id } = useParams();
-
-  React.useEffect(() => {
-    async function fatchProduto(url) {
-      try {
-        const response = await fetch(url);
-        const json = await response.json();
-        setProduto(json);
-      } catch (erro) {
-        setErro('Ocorreu um erro ao buscar o produto.');
-      } finally {
-        setLoading(false);
-      }
-    }
-    fatchProduto(`https://ranekapi.origamid.dev/json/api/produto/${id}`);
-  }, [id]);
-
-  if (loading) return <div className="loading"></div>;
-
-  if (erro) return <p>{erro}</p>;
-  if (produto === null) return null;
+  const produto = useLoaderData();
 
   return (
-    <section className={styles.produto + ' animeLeft'}>
+    <section className={`${styles.produto} animeLeft`}>
       <Head
         title={`Ranek | ${produto.nome}`}
         description={`Ranek | Esse é um produto ${produto.nome}`}
