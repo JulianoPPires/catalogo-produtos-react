@@ -6,7 +6,7 @@ import Head from './Head';
 const Produto = () => {
   const [produto, setProduto] = React.useState(null);
   const [erro, setErro] = React.useState(null);
-  const [loading, setLoading] = React.useState(null);
+  const [loading, setLoading] = React.useState(true);
   const { id } = useParams();
 
   React.useEffect(() => {
@@ -16,7 +16,7 @@ const Produto = () => {
         const json = await response.json();
         setProduto(json);
       } catch (erro) {
-        setError('Ocorreu um erro ao buscar o produto.');
+        setErro('Ocorreu um erro ao buscar o produto.');
       } finally {
         setLoading(false);
       }
@@ -24,23 +24,25 @@ const Produto = () => {
     fatchProduto(`https://ranekapi.origamid.dev/json/api/produto/${id}`);
   }, [id]);
 
-  if (loading) return <p>Carregando...</p>;
+  if (loading) return <div className="loading"></div>;
 
   if (erro) return <p>{erro}</p>;
   if (produto === null) return null;
 
   return (
-    <section className={`${styles.produto} animeLeft`}>
+    <section className={styles.produto + ' animeLeft'}>
       <Head
         title={`Ranek | ${produto.nome}`}
         description={`Ranek | Esse é um produto ${produto.nome}`}
       />
 
-      {produto.fotos.map((foto) => (
-        <img key={foto.src} src={foto.src} alt={foto.titulo} />
-      ))}
+      <div>
+        {produto.fotos.map((foto) => (
+          <img key={foto.src} src={foto.src} alt={foto.titulo} />
+        ))}
+      </div>
 
-      <div className={styles.produto}>
+      <div>
         <h1>{produto.nome}</h1>
         <span className={styles.preco}>R$ {produto.preco}</span>
         <p className={styles.descricao}>{produto.descricao}</p>
